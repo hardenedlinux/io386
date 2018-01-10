@@ -1,5 +1,6 @@
 
-CFLAGS=-O2 -Wall -W -Wno-parentheses -Wstrict-prototypes
+OPT=-O2
+CFLAGS=$(OPT) -Wall -W -Wno-parentheses -Wstrict-prototypes -finline-functions
 
 # Host OS and release (override if you are cross-compiling)
 HOST=
