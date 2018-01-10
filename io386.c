@@ -100,6 +100,11 @@ int main(int argc, char** argv)
 	  errstr = "Input and output are mutually exclusive!\n";
 	  goto end_getopt;
 	}
+	mode.width = get_width(optarg);
+	if (mode.width == INVALID) {
+	  errstr = "Invalid width mark!\n";
+	  goto end_getopt;
+	}
 	mode.mode = OUTPUT;
 	break;
       case 'b':
@@ -134,7 +139,7 @@ int main(int argc, char** argv)
     } else {
       port = temp_port;
     }
-    if (mode.mode == INPUT) {
+    if (mode.mode == OUTPUT) {
       data = strtoul(argv[optind + 1], NULL, 0);
       if (errno != 0) {
 	errstr = "Invalid data!\n";
