@@ -68,7 +68,7 @@ distclean: clean
 install: all
 # -c is ignored on Linux, but required on FreeBSD
 	$(DIRINSTALL) -m 755 $(DESTDIR)$(SBINDIR)
-	$(INSTALL) -c -m 755 $(STRIP) io386
+	$(INSTALL) -c -m 755 $(STRIP) io386 $(DESTDIR)$(SBINDIR)
 
 uninstall: all
 	rm -f $(DESTDIR)$(SBINDIR)/io386
