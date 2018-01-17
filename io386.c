@@ -1,7 +1,7 @@
-/* 
+/*
  * io386.c
  * A command line tool wrapping around ioperm(2) iopl(2) outb(2), etc.
- * 
+ *
  *
  * The program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public
  * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA 
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * In addition, as a special exception, the copyright holders give
  * permission to link the code of portions of this program with the
@@ -42,13 +42,13 @@
 #include "io386.h"
 
 static const char optstr[]
-= "i:o:b:ps";
+= "i:o:b:s";
 
 void pusage(const char* name)
 {
   fprintf(stderr,
 	  "Wrapper tool around outb(2) and its friends.\n"
-	  "Usage: %s -i|-o <width> [-b <base for output>] [-p] [-s <count>] port [data]\n"
+	  "Usage: %s -i|-o <width> [-b <base for output>] [-s <count>] port [data]\n"
 	  "<width> = b(unsigned char), w(unsigned short), l(unsigned int)\n"
 	  "<base> = d(decimal, default), 8(octal), x(for hexadecimal)\n"
 	  "serialized output operation reads raw binary stream as an array of <count>\n"
@@ -103,7 +103,6 @@ int main(int argc, char** argv)
   }
 
   struct op_mode mode = INVALID_OP_MODE;
-  bool use_pause = false;
   uint32_t s_count = 0;
   const char* errstr = NULL;
   uint16_t port = 0;
@@ -146,9 +145,6 @@ int main(int argc, char** argv)
 	  errstr = "Invalid base mark!\n";
 	  goto end_getopt;
 	}
-	break;
-      case 'p':
-	use_pause = true;
 	break;
       case 's':
 	{
@@ -206,18 +202,15 @@ int main(int argc, char** argv)
     if (mode.mode == INPUT) {
       switch(mode.width) {
       case BYTE:
-	data = (use_pause)?
-	  inb_p((uint16_t)port):inb((uint16_t)port);
+	data = inb((uint16_t)port);
 	printf("%hhu\n", (uint8_t)data);
 	break;
       case SHORT:
-	data = (use_pause)?
-	  inw_p((uint16_t)port):inw((uint16_t)port);
+	data = inw((uint16_t)port);
 	printf("%hu\n", (uint16_t)data);
 	break;
       case INT:
-	data = (use_pause)?
-	  inl_p((uint16_t)port):inl((uint16_t)port);
+	data = inl((uint16_t)port);
 	printf("%u\n", (uint32_t)data);
 	break;
       default:
@@ -227,22 +220,13 @@ int main(int argc, char** argv)
     } else {
       switch(mode.width) {
       case BYTE:
-	if (use_pause)
-	  outb_p((uint8_t)data, port);
-	else
-	  outb((uint8_t)data, port);
+	outb((uint8_t)data, port);
 	break;
       case SHORT:
-	if (use_pause)
-	  outw_p((uint16_t)data, port);
-	else
-	  outw((uint16_t)data, port);
+	outw((uint16_t)data, port);
 	break;
       case INT:
-	if (use_pause)
-	  outl_p((uint32_t)data, port);
-	else
-	  outl((uint32_t)data, port);
+	outl((uint32_t)data, port);
 	break;
       default:
 	//not supposed to go here.
